@@ -106,7 +106,7 @@ if __name__ == '__main__':
 			if f == 0:
 				pass
 			elif (f == 6): # Grab
-				fingers = [scaled_conf] * 5
+				fingers = [[scaled_conf]*4 for _ in range(5)]
 				# TODO also send grab value to steam
 			else:
 				# We have predicted a finger
@@ -116,8 +116,7 @@ if __name__ == '__main__':
 			if not(last_conf == scaled_conf):
 				print("Fingers", fingers)
 				print(f"Class {r}, \"Confidence\", {m.history_cnt[r]/m.hist_len}")
-				# ipc.send(fingers, ipc_joys, ipc_bools)
-				ipc.send(fingers)
+				ipc.send(fingers, ipc_joys, ipc_bools)
 			last_conf = scaled_conf
 
 	except KeyboardInterrupt:

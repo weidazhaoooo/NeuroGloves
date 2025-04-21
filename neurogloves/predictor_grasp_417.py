@@ -54,7 +54,7 @@ class Predictor:
 		print("SUM", s)
 		
 		# Make a prediction from s
-		pred = [s]*5
+		pred = [[s]*4 for _ in range(5)]
 
 		# Update last grasp
 		print(self.grasp, self.last_grasp)
@@ -67,7 +67,7 @@ if __name__ == '__main__':
 
 	q = multiprocessing.Queue()
 	p = multiprocessing.Process(target=myo_worker, args=(q,))
-	p.start()	
+	p.start()
 	predictor = Predictor()
 	while True:
 		try:

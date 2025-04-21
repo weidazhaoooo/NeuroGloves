@@ -9,9 +9,9 @@ class NamedPipe:
 	def __init__(self, right_hand=True):
 		if right_hand:
 			# OpenGloves /named-pipe-communication-manager/src/DeviceProvider.cpp#L77
-			self.pipename = r'\\.\\pipe\\vrapplication\\input\\right'
+			self.pipename = r'\\.\\pipe\\vrapplication\\input\\glove\\v2\\right'
 		else:
-			self.pipename = r'\\.\\pipe\\vrapplication\\input\\left'
+			self.pipename = r'\\.\\pipe\\vrapplication\\input\\glove\\v2\\left'
 		self.fingers = [False]*5
 		self.joys = [0.0, 0.0]
 		self.buttons = [False]*8
@@ -63,8 +63,19 @@ class NamedPipe:
 											 None)
 			win32file.WriteFile(pipe, encoded)
 			win32file.CloseHandle(pipe)
-		except pywintypes.error:
-			print("Pipe busy")
+		except pywintypes.error as e:
+			# Error code 2 = File not found (pipe not created)
+			# Error code 231 = Pipe is busy
+			# Error code 232 = Pipe has been ended
+			error_code = e.winerror
+			if error_code == 2:
+				print(f"Pipe not found: {self.pipename} - OpenGloves might not be running")
+			elif error_code == 231:
+				print(f"Pipe is busy: {self.pipename} - Another application might be using it")
+			elif error_code == 232:
+				print(f"Pipe has been ended: {self.pipename} - Connection might have been closed")
+			else:
+				print(f"Pipe error: {e}")
 
 
 if __name__ == "__main__":
@@ -87,5 +98,4 @@ if __name__ == "__main__":
 							print(f"Wrote {fingers} to IPC")
 	except KeyboardInterrupt:
 		print("Quitting")
-		
 		quit()
